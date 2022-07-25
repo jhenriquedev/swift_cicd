@@ -1,0 +1,27 @@
+name: CI-Test
+
+on: [push]
+
+jobs:
+  test:
+    name: Test
+    
+    runs-on: macos-latest
+    
+    strategy:
+      matrix:
+        destination: ['platform=iOS Simulator,OS=15.5,name=iPhone 11 Pro Max']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run Build
+        run: | 
+          xcodebuild clean build -project Swift_cicd.xcodeproj -scheme Swift_cicd -destination "${destination}" CODE_SIGN_IDENTITY="" CODE_SIGN_REQUIRED=NO ONLY_ACTIVE_ARCH=NO
+        env:
+          destination: ${{ matrix.destination }}
+      - name: Run tests
+        run: |
+          xcodebuild clean build -project Swift_cicd.xcodeproj -scheme Swift_cicdTests -destination "${destination}" CODE_SIGN_IDENTITY="" CODE_SIGN_REQUIRED=NO ONLY_ACTIVE_ARCH=NO
+        env:
+          destination: ${{ matrix.destination }}
